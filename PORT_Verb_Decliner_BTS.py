@@ -4,6 +4,7 @@ Classes and functions for Portuguese Verb Decliner project
 
 class Present: #indicative (default for verbs so far)
     def __init__(self,inf):
+        self._tense='present'
         self._infinitive=inf
         self._pst1s=''
         self._pst23s=''
@@ -62,6 +63,7 @@ class Present: #indicative (default for verbs so far)
         
 class ImperfectPreterit: 
     def __init__(self,inf):
+        self._tense='imperfect preterit'
         self._infinitive=inf
         self._imp123s=''
         self._imp1p=''
@@ -115,6 +117,7 @@ class ImperfectPreterit:
 
 class PerfectPreterit:
     def __init__(self,inf):
+        self._tense='perfect preterit'
         self._prf1s=''
         self._prf23s=''
         self._prf1p=''
@@ -182,19 +185,32 @@ g.forms[pst23s]=g.ar_pst23s(inf)
 g.forms[pst1p]=g.ar_pst1p(inf)
 g.forms[pst23p]=g.ar_pst23p(inf)
 '''
-
+#below are tests for option 2 (view a verb chart)
 inf='cantar'
+tense='present'
 g=Present(inf)
 #make forms
 g.ar_pst1s(inf)
 g.ar_pst23s(inf)
 g.ar_pst1p(inf)
 g.ar_pst23p(inf)
-#put forms in list; in program, would use .append() after creating each form
+
+
+#put forms in list; in actual program, would use .append() after creating each form
 forms_list=[g._pst1s,g._pst23s,g._pst23s,g._pst1p,g._pst23p,g._pst23p]
+persons=['1st','2nd','3rd'] #move this to top of program later so list isn't
+#initialized every time you make a chart
+'''
+print(tense.capitalize(),'tense forms of',inf.lower()+':','\n')
 #use list for charts; need to be able to index
-for i in ['Person','Singular','Plural']: #header row
-    print(format(i,'<20'))
-    for n in range(6): #print s under singular column and p under plural column
-        print(forms_list[n])
-        print('\n')
+for header in ['Person','Singular','Plural']: #each str heads a column w/ corresponding info
+    print(format(header,'<20s'),end='')
+print()
+
+for n in range(3):
+    #for each row, need to pull both sing. and pl. verb form of that Person
+    print(format(persons[n],'<20s'),format(forms_list[n],'<20s'),forms_list[n+3],sep='')
+
+print('\n'+'*'*60) #line of chars separating charts
+'''
+
