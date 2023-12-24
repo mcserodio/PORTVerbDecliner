@@ -1,6 +1,12 @@
 '''
-Classes and functions for Portuguese Verb Decliner project
+Classes, functions, variables, and other behind-the-scenes data for the Portuguese Verb Decliner project
 '''
+
+#list of verb persons for chart printing/writing
+persons=['1st','2nd','3rd']
+
+#list of subject pronouns for user test
+subjects=['Eu','Você','Ele/ela','Nós','Vocês','Eles/elas']
 
 class Present: #indicative (default for verbs so far)
     def __init__(self,inf):
@@ -10,8 +16,8 @@ class Present: #indicative (default for verbs so far)
         self._pst23s=''
         self._pst1p=''
         self._pst23p=''
-        self.pst_forms={}
-        
+        self._forms=() #tuple, not list, bc each person/num pair only has one form per verb
+    
     def ar_pst1s(self,inf): #-ar infinitive: present 1st person singular
         #redefine _pst1s attribute: infinitive declined with -o ending
         self._pst1s=self._infinitive[:-2] #assign verb root to attribute
@@ -60,6 +66,9 @@ class Present: #indicative (default for verbs so far)
     def ir_pst23p(self,inf): #present 2nd & 3rd person plural
         self._pst23p=self._infinitive[:-2]  
         self._pst23p+='em'
+
+    def forms(self): #after calling methods to create forms, 
+        self._forms=(self._pst1s,self._pst23s,self._pst23s,self._pst1p,self._pst23p,self._pst23p)
         
 class ImperfectPreterit: 
     def __init__(self,inf):
@@ -68,7 +77,7 @@ class ImperfectPreterit:
         self._imp123s=''
         self._imp1p=''
         self._imp23p=''
-        self.pst_form={}
+        self._forms=()
         
     def ar_imp123s(self,inf): #imperfect 1st, 2nd, & 3rd person singular
         self._imp123s=self._infinitive[:-1]  
@@ -115,14 +124,18 @@ class ImperfectPreterit:
         self._imp23p=self._infinitive[:-2] 
         self._imp23p+='iam'
 
+    def forms(self):
+        self._forms=(self._imp123s,self._imp123s,self._imp123s,self._imp1p,self._imp23p,self._imp23p)
+
 class PerfectPreterit:
     def __init__(self,inf):
         self._tense='perfect preterit'
+        self._infinitive=inf
         self._prf1s=''
         self._prf23s=''
         self._prf1p=''
         self._prf23p=''
-        self.pst_forms={}
+        self._forms=() #don't initialize w/ forms; would be a list of empty strings
         
     def ar_prf1s(self,inf): #perfect 1st person singular
         self._prf1s=self._infinitive[:-2] 
@@ -175,6 +188,9 @@ class PerfectPreterit:
             self._prf23p+=i
         self._prf23p+='ram'
 
+    def forms(self):
+        self._forms=(self._prf1s,self._prf23s,self._prf23s,self._prf1p,self._prf23p,self._prf23p)
+
 #testing: initialize tense object, call methods to make forms, and save in dict, then print chart
 ''' use dictionary for user TEST action
 forms_dict={}
@@ -184,7 +200,7 @@ g.forms[pst1s]=g.ar_pst1s(inf)
 g.forms[pst23s]=g.ar_pst23s(inf)
 g.forms[pst1p]=g.ar_pst1p(inf)
 g.forms[pst23p]=g.ar_pst23p(inf)
-'''
+
 #below are tests for option 2 (view a verb chart)
 inf='cantar'
 tense='present'
@@ -198,19 +214,6 @@ g.ar_pst23p(inf)
 
 #put forms in list; in actual program, would use .append() after creating each form
 forms_list=[g._pst1s,g._pst23s,g._pst23s,g._pst1p,g._pst23p,g._pst23p]
-persons=['1st','2nd','3rd'] #move this to top of program later so list isn't
-#initialized every time you make a chart
 '''
-print(tense.capitalize(),'tense forms of',inf.lower()+':','\n')
-#use list for charts; need to be able to index
-for header in ['Person','Singular','Plural']: #each str heads a column w/ corresponding info
-    print(format(header,'<20s'),end='')
-print()
 
-for n in range(3):
-    #for each row, need to pull both sing. and pl. verb form of that Person
-    print(format(persons[n],'<20s'),format(forms_list[n],'<20s'),forms_list[n+3],sep='')
-
-print('\n'+'*'*60) #line of chars separating charts
-'''
 
