@@ -1,13 +1,33 @@
-from unittest import *
+import unittest
 from PORT_Verb_Decliner_BTS import *
+#from PORT_Verb_Decliner import __
 
-inf='bantar'
+inf='bantar' 
 v=Present(inf)
 v.ar_pst1s(inf)
 v.ar_pst23s(inf)
 v.ar_pst1p(inf)
 v.ar_pst23p(inf)
 
+#each tense class's functions are formatted the same way, so only need to test one set
+class TestPresent(unittest.TestCase):
+    def test_ar_pst1s(self): #naming convention note: tests must start w/ 'test'
+        declined=v._pst1s
+        self.assertEqual(declined,'banto')
+    def test_ar_pst23s(self):
+        declined=v._pst23s
+        self.assertEqual(declined,'banta')
+    def test_ar_pst1p(self):
+        declined=v._pst1p
+        self.assertEqual(declined,'bantamos')
+    def test_ar_pst1s(self):
+        declined=v._pst23p
+        self.assertEqual(declined,'bantam')
+
+if __name__== '__main__': #to run tests directly from this module
+    unittest.main()
+    
+'''
 with open("Portuguese_Verb_Charts.txt",'r+') as charts:
     charts_txt=charts.read()
     #print(charts_txt)
@@ -39,3 +59,5 @@ with open("Portuguese_Verb_Charts.txt",'a+') as charts:
     charts_txt.write(revised_txt)
     print(v._tense.capitalize(),'chart of',inf.lower(),'has been deleted from your charts.')
     charts.close()
+'''
+
