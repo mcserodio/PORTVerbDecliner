@@ -1,13 +1,11 @@
 '''
 24 Nov 2023 - present: Brazilian Portuguese imperative verb decliner
-Make three different classes of verbs: -ar, -er, -ir
-Tenses (each tense is a class function; declined forms stored as object attributes):
-present, imperfect preterit, perfect preterit, -present participle (special case)
-Start with just imperatives for now
--maybe later: separate this project into 2 files (1 for main program, 1 for classes/functions -->
-import BTS file into main program file)
--also: the program itself should make files using I/O (do that later)
-Main Program: create new chart (in old or existing txt file), view existing charts, modify existing charts, delete charts, irregular vrebs
+For now, this only deals with regular, non-stem-changing verbs
+Start with just imperatives too for now
+
+Main Program: create new chart (in old or existing txt file), view existing charts, modify existing charts, delete charts, irregular Vs
+
+To-do: make another py file in the folder w/ unit tests
 '''
 from PORT_Verb_Decliner_BTS import *
 
@@ -105,8 +103,9 @@ preterit (2), or perfect preterit (3)? ')
     while end_menu==False:
         #make a menu for user to choose which tense they want to conjugate inf to
         activity=input("\nMain Menu:\nWould you like to test your knowledge (1),\n\
-View a verb chart (2), \nSave a new chart (3), or \nView all saved charts (4)?\
-\nEnter a number, 'back' to enter a new verb, or 'stop' to end the program. ")
+View a verb chart (2), \nSave a new chart (3), \nView all saved charts (4), or\
+\nDelete an existing chart (5)? \nEnter a number, 'back' to enter a new verb, or \
+'stop' to end the program. ")
         match activity.lower():
             case '1':
                 print("\nTest your knowledge! Let's see how many verbs you can decline.",'\n','Enter the corresponding declined\
@@ -144,21 +143,21 @@ View a verb chart (2), \nSave a new chart (3), or \nView all saved charts (4)?\
      
                 
             case '3': #write in verb chart to text file using append mode
-                with open("Portuguese_Verb_Charts.txt",'a') as file_obj: #open and/or create new file to write into
-                    file_obj.write((g._tense.capitalize()+' tense forms of '+inf.lower()+': '+'\n'))
+                with open("Portuguese_Verb_Charts.txt",'a') as charts: #open and/or create new file to write into
+                    charts.write((v._tense.capitalize()+' tense forms of '+inf.lower()+': '+'\n'))
                     #use list for charts; need to be able to index
                     for header in ['Person','Singular','Plural']: #each str heads a column w/ corresponding info
-                        file_obj.write((format(header,'<20s')+''))
-                    file_obj.write('\n')
+                        charts.write((format(header,'<20s')+''))
+                    charts.write('\n')
 
                     for n in range(3):
                         #for each row, need to pull both sing. and pl. verb form of that Person
-                        file_obj.write((format(persons[n],'<20s')+''+format(v._forms[n],'<20s')+''+v._forms[n+3]+'\n'))
+                        charts.write((format(persons[n],'<20s')+''+format(v._forms[n],'<20s')+''+v._forms[n+3]+'\n'))
 
-                    file_obj.write('\n'+'*'*60+'\n') #line of chars separating charts
-                file_obj.close()
+                    charts.write('\n'+'*'*60+'\n') #line of chars separating charts
+                charts.close()
 
-                print("Declined verb chart has been saved in text file named \"Portuguese_Verb_Charts\".")
+                print("\nDeclined verb chart has been saved in text file named \"Portuguese_Verb_Charts\".")
                 
             case '4': #read data from text file as str; print out to the user in a formatted fashion...
                 print('holder statement while I test this in the BTS file')
@@ -167,6 +166,23 @@ View a verb chart (2), \nSave a new chart (3), or \nView all saved charts (4)?\
                 #also give user another choice here: to wipe all existing charts or just remove 1
                 #to wipe all existing charts, use write mode and write in ''
 
+            case '5':
+                try:                         
+                    with open("Portuguese_Verb_Charts.txt",'r+') as charts:
+                        charts_txt=charts.read()
+                        chart_start=charts_txt.find(v._tense.capitalize()+' tense forms of '+inf.lower())
+                        chart_end=charts_txt.find('*', chart_start) #finds first occurrence of '*' substring after chart_start
+                        chart_end+=59 #line of 60 '*'s marks end of the chart; add 59 to find final index of chart
+                        charts.truncate(0) #change file handle position from end to beginning of charts
+                        revised_txt=charts_txt[:chart_start]+charts_txt[chart_end+1:]
+                        charts.write(revised_txt)
+                        print(v._tense.capitalize(),'chart of',inf.lower(),'has been deleted from your charts.')
+                        charts.close()
+
+                except: #if chart has not yet been written into file, will raise an exception
+                    print("\nSorry, an error occurred. Please ensure that",v._tense,"chart of",inf.lower(),\
+                          'exists in your saved charts.')
+                    
             case 'back':
                 end_menu=True
                 

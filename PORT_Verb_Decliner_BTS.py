@@ -1,5 +1,9 @@
 '''
 Classes, functions, variables, and other behind-the-scenes data for the Portuguese Verb Decliner project
+Each tense accounts for forms of three different types of regular verb endings: -ar, -er, -ir
+
+Tenses (each tense is a class function; declined forms stored as object attributes):
+present, imperfect preterit, perfect preterit, -present participle (special case)
 '''
 
 #list of verb persons for chart printing/writing
