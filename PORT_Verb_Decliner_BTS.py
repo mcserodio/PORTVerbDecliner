@@ -12,6 +12,11 @@ persons=['1st','2nd','3rd']
 #list of subject pronouns for user test
 subjects=['Eu','Você','Ele/ela','Nós','Vocês','Eles/elas']
 
+def chart_not_found(index):
+    if index==-1:
+        raise Exception(v._tense.capitalize(),'chart of',inf.lower(),'does not exist\
+in your saved charts.')
+
 class Present: #indicative (default for verbs so far)
     def __init__(self,inf):
         self._tense='present'
@@ -194,30 +199,4 @@ class PerfectPreterit:
 
     def forms(self):
         self._forms=(self._prf1s,self._prf23s,self._prf23s,self._prf1p,self._prf23p,self._prf23p)
-
-#testing: initialize tense object, call methods to make forms, and save in dict, then print chart
-''' use dictionary for user TEST action
-forms_dict={}
-inf='cantar'
-g=Present(inf)
-g.forms[pst1s]=g.ar_pst1s(inf)
-g.forms[pst23s]=g.ar_pst23s(inf)
-g.forms[pst1p]=g.ar_pst1p(inf)
-g.forms[pst23p]=g.ar_pst23p(inf)
-
-#below are tests for option 2 (view a verb chart)
-inf='cantar'
-tense='present'
-g=Present(inf)
-#make forms
-g.ar_pst1s(inf)
-g.ar_pst23s(inf)
-g.ar_pst1p(inf)
-g.ar_pst23p(inf)
-
-
-#put forms in list; in actual program, would use .append() after creating each form
-forms_list=[g._pst1s,g._pst23s,g._pst23s,g._pst1p,g._pst23p,g._pst23p]
-'''
-
 

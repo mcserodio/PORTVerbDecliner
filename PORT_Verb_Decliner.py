@@ -5,7 +5,11 @@ Start with just imperatives too for now
 
 Main Program: create new chart (in old or existing txt file), view existing charts, modify existing charts, delete charts, irregular Vs
 
-To-do: make another py file in the folder w/ unit tests
+Next goal: address stem-changing verbs. Some are simple enough that you can put
+"if inf[-3]=='c', --> c com ce cegilia", but I want to also make it so that the
+program can recognize "if the first vowel is __, it must change to another vowel
+__ in these cases", even if that vowel appears in different indexes for different
+verb stems
 '''
 from PORT_Verb_Decliner_BTS import *
 
@@ -20,7 +24,7 @@ while end_program==False:
     #validate data: ensure user enters a declinable word
     valid_inf=False
     while valid_inf==False:
-        inf=input('Enter an infinitive Portuguese verb: ') 
+        inf=input('\nEnter an infinitive Portuguese verb: ') 
         if inf[-2:]=='ar' or inf[-2:]=='er' or inf[-2:]=='ir':
             #this doesn't account for infinitives; later, make list of irregular Vs
             #and check 'if inf in list_name'
@@ -160,8 +164,15 @@ View a verb chart (2), \nSave a new chart (3), \nView all saved charts (4), or\
                 print("\nDeclined verb chart has been saved in text file named \"Portuguese_Verb_Charts\".")
                 
             case '4': #read data from text file as str; print out to the user in a formatted fashion...
-                print('holder statement while I test this in the BTS file')
-                #charts are separated by '*' lines w/ len=60
+                try: 
+                    with open("Portuguese_Verb_Charts.txt",'r') as charts:
+                        charts_txt=charts.read()
+                        #lines in text file are separated by line break
+                        for line in charts_txt.split('\n'):
+                            print(line)
+                        charts.close()
+                except: #if verb chart file has not been created
+                   print("\nSorry, an error occurred. Please ensure that file Portuguese_Verb_Charts exists in the same folder as this program.")
                 #first use try block to check if chart exists w/ read mode
                 #also give user another choice here: to wipe all existing charts or just remove 1
                 #to wipe all existing charts, use write mode and write in ''
@@ -171,6 +182,7 @@ View a verb chart (2), \nSave a new chart (3), \nView all saved charts (4), or\
                     with open("Portuguese_Verb_Charts.txt",'r+') as charts:
                         charts_txt=charts.read()
                         chart_start=charts_txt.find(v._tense.capitalize()+' tense forms of '+inf.lower())
+                        chart_not_found(chart_start)
                         chart_end=charts_txt.find('*', chart_start) #finds first occurrence of '*' substring after chart_start
                         chart_end+=59 #line of 60 '*'s marks end of the chart; add 59 to find final index of chart
                         charts.truncate(0) #change file handle position from end to beginning of charts
@@ -180,8 +192,8 @@ View a verb chart (2), \nSave a new chart (3), \nView all saved charts (4), or\
                         charts.close()
 
                 except: #if chart has not yet been written into file, will raise an exception
-                    print("\nSorry, an error occurred. Please ensure that",v._tense,"chart of",inf.lower(),\
-                          'exists in your saved charts.')
+                    print("\nSorry, an error occurred. Please ensure that text file Portuguese_Verb_Charts exists in the same folder as this program\
+and that",v._tense,"chart of",inf.lower(),'exists in your saved charts.')
                     
             case 'back':
                 end_menu=True
