@@ -71,7 +71,7 @@ class TestChartFile(unittest.TestCase):
         with self.assertRaises(Exception): #use context manager so you can call function normally
             chart_not_found(-1)
             
-        
+#new test idea: user permissions (check for pre-existing permissions?)    
 
 if __name__== '__main__': #to run tests directly from this module
     unittest.main()

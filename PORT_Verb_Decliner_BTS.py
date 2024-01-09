@@ -12,6 +12,28 @@ persons=['1st','2nd','3rd']
 #list of subject pronouns for user test
 subjects=['Eu','Você','Ele/ela','Nós','Vocês','Eles/elas']
 
+#permissions for user to unlock after performing certain actions
+#use bitwise operators; default 00000 at start, w/ each index representing permission
+#(respectively) to take test, view current verb's chart, save new chart,
+#view all saved charts, or delete existing chart
+'''
+Note: currently, user must both get a full score on a test and save a new chart before they're allowed
+to view/delete existing charts, regardless of whether they already have data saved in the file
+(from previous uses of the program); may want to store the user permissions within a file to check
+user permissions each time user starts the program instead.
+'''
+
+#unlocked by entering infinitive + declension tense
+allow_test = 10000
+
+#unlocked by getting full score on test
+allow_new_chart = 11100 
+
+#unlocked by saving at least 1 chart to file
+allow_chart_mod = 11111
+
+
+
 def chart_not_found(index):
     if index==-1:
         raise Exception(v._tense.capitalize(),'chart of',inf.lower(),'does not exist\

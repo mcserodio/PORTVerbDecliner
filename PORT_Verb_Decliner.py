@@ -5,11 +5,47 @@ Start with just imperatives too for now
 
 Main Program: create new chart (in old or existing txt file), view existing charts, modify existing charts, delete charts, irregular Vs
 
+-- use bitwise algebra to unlock user "permissions" to perform certain actions
+before they're able to save a chart (e.g. must pass 6/6 test for a declined verb
+before they can save the declined data) --> turn this into a level-up game?
+DEFAULT PERMISSION 10000 (to take test, view V chart, save chart, view all saved charts,
+delete existing chart; must perform (1) to unlock 2|3|4; must perform 3 to unlock
+5 (maybe use ^ XOR for relationship betweeen 3 and 5?)
+
 Next goal: address stem-changing verbs. Some are simple enough that you can put
 "if inf[-3]=='c', --> c com ce cegilia", but I want to also make it so that the
 program can recognize "if the first vowel is __, it must change to another vowel
 __ in these cases", even if that vowel appears in different indexes for different
 verb stems
+
+For stem-changing Vs, I want to t try reverse indexing (from -1) and use .find() to,
+for example, find the final "c" in conhecer --> the final c gets an accent to ç
+in the eu form. If I use .find() normally, it'll return the first index in which it
+occurs, which may not be the right occurrence of 'c' that needs to change in the stem
+
+Idea for new feature: use verb decliner to receive a Portuguese text as input, then
+output a version of that text that takes place in a different time by changing the tense
+of Vs in the text.
+- maybe use doubly linked lists w/ pointers between certain tenses so that each diff. tense
+within the text is re-declined to the right corresponding time frame?
+- e.g. OG text w/ present and future Vs, when rewritten to have happened in the past,
+will (respectively) return perfect and present verbs.
+- Problem: some non-verb words may resemble declined verbs, e.g. "churrasco" has a
+similar ending to 1st person present singular verbs, but is a noun. How do I deal with this?
+--> tell user to mark up the their data by writing '*' char before each verb?
+The program should then look for each occurrence of '*' (may need to remove each occurrence
+after declining the V) and parse the word (ending at the next occurrence of a space) for
+its verb form.
+- Problem: what if the vowel stem of the verb ending isn't obvious from the declined form?
+e.g. '-o' ending doesn't tell you if it's an ar/er/ir verb.
+
+Miscellaneous ideas:
+- future tense
+- subjunctive/indicative moods
+- ability to have random infinitive/tense chosen for user (using random.randint & list of vocab)
+- let user view a specific form of a verb (instead of whole chart)
+- ask to read what the uses of diff. tenses are (e.g. when to use imperfect vs perfect)
+- irregular stems (non-stem-changing)
 '''
 from PORT_Verb_Decliner_BTS import *
 
@@ -17,9 +53,14 @@ from PORT_Verb_Decliner_BTS import *
 #note: later in project, involve subjunctives/imperatives/irregular or stem-changing verbs
 
 print("Welcome to the Brazilian Portuguese Verb Recliner! Obrigada por vir.")
+
+#default user permissions: none. Resets each time user starts the program. See BTS for notes
+user_permission = 00000
+    
 #while loop to keep running decliner until user wants to stop
 end_program=False
 while end_program==False:
+
     #get infinitive and tense from the user
     #validate data: ensure user enters a declinable word
     valid_inf=False
@@ -101,19 +142,23 @@ preterit (2), or perfect preterit (3)? ')
                     v.ir_prf23p(inf)
 
     v.forms()
+
+    #by choosing inf/tense for new verb, user unlocks ability to take test
+    user_permission |= allow_test
      
     #nested while loop to let user do multiple actions with the declined forms
     end_menu=False
     while end_menu==False:
         #make a menu for user to choose which tense they want to conjugate inf to
-        activity=input("\nMain Menu:\nWould you like to test your knowledge (1),\n\
+        activity=input("\nMain Menu:\nWhat would you like to do with your declined verb?\
+\nTest your knowledge (1),\n\
 View a verb chart (2), \nSave a new chart (3), \nView all saved charts (4), or\
 \nDelete an existing chart (5)? \nEnter a number, 'back' to enter a new verb, or \
 'stop' to end the program. ")
         match activity.lower():
             case '1':
-                print("\nTest your knowledge! Let's see how many verbs you can decline.",'\n','Enter the corresponding declined\
- form to match each subject pronoun.')
+                print("\nTest your knowledge! Let's see how many forms you can decline. You must earn a full score\
+ to unlock actions (2) and (3).",'\n','Enter the corresponding declined form to match each subject pronoun. Boa sorte!')
                 counter=0
                 score=0
                 forms_dict={}
@@ -129,11 +174,18 @@ View a verb chart (2), \nSave a new chart (3), \nView all saved charts (4), or\
                         print('Incorrect. The correct form is',i+'.')
                     counter+=1 #upon next iteration, subsequent pronoun is referenced
                 print('Your total score was',score,'out of 6.')
+                if score==6: #user unlocks ability to save/view chart
+                    user_permission|=allow_new_chart
                 
 
             case '2': #print out a verb chart
+                #check user permission
+                if user_permission & allow_new_chart < 11000: #minimum permission 11000 required
+                    print("Sorry, you don't have permission to view this chart. Please try completing a test (1) first.")
+                    continue #return to Main Menu
+                
                 #CHART FORMAT: infinitive header (title); columns by singular/plural; rows by person
-                print(v._tense.capitalize(),'tense forms of',inf.lower()+':','\n')
+                print('\n'+v._tense.capitalize(),'tense forms of',inf.lower()+':','\n')
                 #use list for charts; need to be able to index
                 for header in ['Person','Singular','Plural']: #each str heads a column w/ corresponding info
                     print(format(header,'<20s'),end='')
@@ -147,6 +199,11 @@ View a verb chart (2), \nSave a new chart (3), \nView all saved charts (4), or\
      
                 
             case '3': #write in verb chart to text file using append mode
+                #check user permission
+                if user_permission & allow_new_chart < 11100: #minimum permission 11100 required
+                    print("Sorry, you don't have permission to save this chart. Please try completing a test (1) first.")
+                    continue #return to Main Menu
+                
                 with open("Portuguese_Verb_Charts.txt",'a') as charts: #open and/or create new file to write into
                     charts.write((v._tense.capitalize()+' tense forms of '+inf.lower()+': '+'\n'))
                     #use list for charts; need to be able to index
@@ -162,22 +219,38 @@ View a verb chart (2), \nSave a new chart (3), \nView all saved charts (4), or\
                 charts.close()
 
                 print("\nDeclined verb chart has been saved in text file named \"Portuguese_Verb_Charts\".")
+
+                #user unlocks permission to view all/delete saved charts
+                user_permission|=allow_chart_mod
                 
             case '4': #read data from text file as str; print out to the user in a formatted fashion...
+                #check user permission
+                if user_permission & allow_chart_mod < 11010: #minimum permission 11010 required
+                    print("Sorry, you don't have permission to view saved charts. Please try saving a chart (3) first.")
+                    continue #return to Main Menu
+                
                 try: 
                     with open("Portuguese_Verb_Charts.txt",'r') as charts:
                         charts_txt=charts.read()
                         #lines in text file are separated by line break
                         for line in charts_txt.split('\n'):
                             print(line)
-                        charts.close()
+                    
                 except: #if verb chart file has not been created
                    print("\nSorry, an error occurred. Please ensure that file Portuguese_Verb_Charts exists in the same folder as this program.")
                 #first use try block to check if chart exists w/ read mode
                 #also give user another choice here: to wipe all existing charts or just remove 1
                 #to wipe all existing charts, use write mode and write in ''
 
+                finally: #if try block raises exception after opening file, this block runs regardless of how far the other blocks execute
+                    charts.close()
+
             case '5':
+                #check user permission
+                if user_permission & allow_chart_mod < 11001: #minimum permission 11001 required
+                    print("Sorry, you don't have permission to delete a chart. Please try saving a chart (3) first.")
+                    continue #return to Main Menu
+                
                 try:                         
                     with open("Portuguese_Verb_Charts.txt",'r+') as charts:
                         charts_txt=charts.read()
@@ -189,11 +262,13 @@ View a verb chart (2), \nSave a new chart (3), \nView all saved charts (4), or\
                         revised_txt=charts_txt[:chart_start]+charts_txt[chart_end+1:]
                         charts.write(revised_txt)
                         print(v._tense.capitalize(),'chart of',inf.lower(),'has been deleted from your charts.')
-                        charts.close()
 
                 except: #if chart has not yet been written into file, will raise an exception
                     print("\nSorry, an error occurred. Please ensure that text file Portuguese_Verb_Charts exists in the same folder as this program\
 and that",v._tense,"chart of",inf.lower(),'exists in your saved charts.')
+
+                finally:
+                    charts.close()
                     
             case 'back':
                 end_menu=True
@@ -206,18 +281,3 @@ and that",v._tense,"chart of",inf.lower(),'exists in your saved charts.')
                 print("Sorry, that's not a valid option. Please try again.")
                 continue
     
-
-'''
-#feature to add later (5): delete existing chart from file
-#below: preliminary code for feature 4 
-try: #use try/except/else block for opening a file (if no file exists yet, program will
-    #catch the exception
-    infinitive=input('Please enter an infinitive verb form. ')
-
-    word=Verb(infinitivo)
-    #testing if the basic structure still works; later, should be input-driven for tense:
-    print('the imperfect 1st/2nd/3rd person form of your infinitive is',\
-          word.imp_123ps())
-except:
-    print("Invalid input, please try again.")
-'''
