@@ -1,51 +1,8 @@
 '''
 24 Nov 2023 - present: Brazilian Portuguese imperative verb decliner
-For now, this only deals with regular, non-stem-changing verbs
-Start with just imperatives too for now
+For now, this only deals with regular, non-stem-changing imperative verbs
 
 Main Program: create new chart (in old or existing txt file), view existing charts, modify existing charts, delete charts, irregular Vs
-
--- use bitwise algebra to unlock user "permissions" to perform certain actions
-before they're able to save a chart (e.g. must pass 6/6 test for a declined verb
-before they can save the declined data) --> turn this into a level-up game?
-DEFAULT PERMISSION 10000 (to take test, view V chart, save chart, view all saved charts,
-delete existing chart; must perform (1) to unlock 2|3|4; must perform 3 to unlock
-5 (maybe use ^ XOR for relationship betweeen 3 and 5?)
-
-Next goal: address stem-changing verbs. Some are simple enough that you can put
-"if inf[-3]=='c', --> c com ce cegilia", but I want to also make it so that the
-program can recognize "if the first vowel is __, it must change to another vowel
-__ in these cases", even if that vowel appears in different indexes for different
-verb stems
-
-For stem-changing Vs, I want to t try reverse indexing (from -1) and use .find() to,
-for example, find the final "c" in conhecer --> the final c gets an accent to ç
-in the eu form. If I use .find() normally, it'll return the first index in which it
-occurs, which may not be the right occurrence of 'c' that needs to change in the stem
-
-Idea for new feature: use verb decliner to receive a Portuguese text as input, then
-output a version of that text that takes place in a different time by changing the tense
-of Vs in the text.
-- maybe use doubly linked lists w/ pointers between certain tenses so that each diff. tense
-within the text is re-declined to the right corresponding time frame?
-- e.g. OG text w/ present and future Vs, when rewritten to have happened in the past,
-will (respectively) return perfect and present verbs.
-- Problem: some non-verb words may resemble declined verbs, e.g. "churrasco" has a
-similar ending to 1st person present singular verbs, but is a noun. How do I deal with this?
---> tell user to mark up the their data by writing '*' char before each verb?
-The program should then look for each occurrence of '*' (may need to remove each occurrence
-after declining the V) and parse the word (ending at the next occurrence of a space) for
-its verb form.
-- Problem: what if the vowel stem of the verb ending isn't obvious from the declined form?
-e.g. '-o' ending doesn't tell you if it's an ar/er/ir verb.
-
-Miscellaneous ideas:
-- future tense
-- subjunctive/indicative moods
-- ability to have random infinitive/tense chosen for user (using random.randint & list of vocab)
-- let user view a specific form of a verb (instead of whole chart)
-- ask to read what the uses of diff. tenses are (e.g. when to use imperfect vs perfect)
-- irregular stems (non-stem-changing)
 '''
 from PORT_Verb_Decliner_BTS import *
 
