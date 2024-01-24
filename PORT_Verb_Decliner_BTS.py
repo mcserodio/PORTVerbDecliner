@@ -24,15 +24,28 @@ user permissions each time user starts the program instead.
 '''
 
 #unlocked by entering infinitive + declension tense
-allow_test = 10000
+allow_test = '10000'
 
 #unlocked by getting full score on test
-allow_new_chart = 11100 
+allow_new_chart = '11100'
 
 #unlocked by saving at least 1 chart to file
-allow_chart_mod = 11111
+allow_chart_mod = '11111'
 
+#inform user of their allowed Main Menu actions
+permission_status = {0:'LOCKED',1:'UNLOCKED'}
 
+def compare_permission(user_permission,allowed_permission):
+    user_count=0
+    allowed_count=0
+    for i in user_permission:
+        if i=='1':
+            user_count+=1
+    for i in allowed_permission:
+        if i=='1':
+            allowed_count+=1
+    return user_count>allowed_count
+        
 
 def chart_not_found(index):
     if index==-1:

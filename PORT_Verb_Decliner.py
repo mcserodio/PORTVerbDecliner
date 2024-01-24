@@ -55,7 +55,7 @@ from PORT_Verb_Decliner_BTS import *
 print("Welcome to the Brazilian Portuguese Verb Recliner! Obrigada por vir.")
 
 #default user permissions: none. Resets each time user starts the program. See BTS for notes
-user_permission = 00000
+user_permission = '00000'
     
 #while loop to keep running decliner until user wants to stop
 end_program=False
@@ -144,19 +144,28 @@ preterit (2), or perfect preterit (3)? ')
     v.forms()
 
     #by choosing inf/tense for new verb, user unlocks ability to take test
-    user_permission |= allow_test
+    user_permission = allow_test
      
     #nested while loop to let user do multiple actions with the declined forms
     end_menu=False
     while end_menu==False:
         #make a menu for user to choose which tense they want to conjugate inf to
         activity=input("\nMain Menu:\nWhat would you like to do with your declined verb?\
-\nTest your knowledge (1),\n\
-View a verb chart (2), \nSave a new chart (3), \nView all saved charts (4), or\
-\nDelete an existing chart (5)? \nEnter a number, 'back' to enter a new verb, or \
-'stop' to end the program. ")
+\n(1) Test your knowledge {},\n\
+(2) View a verb chart {}, \n(3) Save a new chart {}, \n(4) View all saved charts {}, or\
+\n(5) Delete an existing chart {}? \nEnter a number, 'back' to choose a new verb, or \
+'stop' to end the program. ".format('[' + permission_status[int(user_permission[0])] + ']', '[' + permission_status[int(user_permission[1])] + ']',\
+                                    '[' + permission_status[int(user_permission[2])] + ']', '[' + permission_status[int(user_permission[3])] + ']',\
+                                    '[' + permission_status[int(user_permission[4])] + ']' ) )
+        #.format to print [UN]LOCKED status for each action in {} position
+        
         match activity.lower():
             case '1':
+                #check user permission
+                if not compare_permission(user_permission,allow_test):
+                    print("Sorry, you don't have permission to access the Main Menu. Please try entering a verb and tense first.")
+                    continue #return to Main Menu
+                
                 print("\nTest your knowledge! Let's see how many forms you can decline. You must earn a full score\
  to unlock actions (2) and (3).",'\n','Enter the corresponding declined form to match each subject pronoun. Boa sorte!')
                 counter=0
@@ -173,16 +182,17 @@ View a verb chart (2), \nSave a new chart (3), \nView all saved charts (4), or\
                     else:
                         print('Incorrect. The correct form is',i+'.')
                     counter+=1 #upon next iteration, subsequent pronoun is referenced
-                print('Your total score was',score,'out of 6.')
+                print('Your total score was %d out of 6.' % score)
                 if score==6: #user unlocks ability to save/view chart
-                    user_permission|=allow_new_chart
+                    user_permission=allow_new_chart
                 
 
             case '2': #print out a verb chart
                 #check user permission
-                if user_permission & allow_new_chart < 11000: #minimum permission 11000 required
+                if not compare_permission(user_permission,allow_new_chart): #minimum permission 11000 required
+                #if bin(user_permission & allow_new_chart) < 0b11000: #scrapped the bitwise idea; did not work for multiple tests due to bin() returning str
                     print("Sorry, you don't have permission to view this chart. Please try completing a test (1) first.")
-                    continue #return to Main Menu
+                    continue
                 
                 #CHART FORMAT: infinitive header (title); columns by singular/plural; rows by person
                 print('\n'+v._tense.capitalize(),'tense forms of',inf.lower()+':','\n')
@@ -200,7 +210,8 @@ View a verb chart (2), \nSave a new chart (3), \nView all saved charts (4), or\
                 
             case '3': #write in verb chart to text file using append mode
                 #check user permission
-                if user_permission & allow_new_chart < 11100: #minimum permission 11100 required
+                if not compare_permission(user_permission,allow_new_chart): #minimum permission 11100 required
+                #if (int(user_permission) & int(allow_new_chart)) < 0b11100:
                     print("Sorry, you don't have permission to save this chart. Please try completing a test (1) first.")
                     continue #return to Main Menu
                 
@@ -221,11 +232,12 @@ View a verb chart (2), \nSave a new chart (3), \nView all saved charts (4), or\
                 print("\nDeclined verb chart has been saved in text file named \"Portuguese_Verb_Charts\".")
 
                 #user unlocks permission to view all/delete saved charts
-                user_permission|=allow_chart_mod
+                user_permission = allow_chart_mod
                 
             case '4': #read data from text file as str; print out to the user in a formatted fashion...
                 #check user permission
-                if user_permission & allow_chart_mod < 11010: #minimum permission 11010 required
+                if not compare_permission(user_permission,allow_chart_mod): #minimum permission 11010 required    
+                #if bin(user_permission & allow_chart_mod) < 0b11010: 
                     print("Sorry, you don't have permission to view saved charts. Please try saving a chart (3) first.")
                     continue #return to Main Menu
                 
@@ -247,7 +259,8 @@ View a verb chart (2), \nSave a new chart (3), \nView all saved charts (4), or\
 
             case '5':
                 #check user permission
-                if user_permission & allow_chart_mod < 11001: #minimum permission 11001 required
+                if not compare_permission(user_permission,allow_chart_mod): #minimum permission 11001 required
+                #if bin(user_permission & allow_chart_mod) < 0b11001:
                     print("Sorry, you don't have permission to delete a chart. Please try saving a chart (3) first.")
                     continue #return to Main Menu
                 
